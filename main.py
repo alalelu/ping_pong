@@ -1,19 +1,26 @@
 import pygame
-import random
 import time
+import os
 pygame.mixer.init()
 pygame.init()
 window = pygame.display.set_mode((700, 500))
 pygame.display.set_caption('Ping Pong')
 clock = pygame.time.Clock()
-sound1 = pygame.mixer.Sound('zvuk-udara-po-myachiku.ogg')
-pygame.mixer.music.load('60655cdca47ed56e7802f58.mp3')
+def resource_path(relative_path):
+    try:
+        base_path = sys._MEIPASS
+    except Exception:
+        base_path = os.path.abspath(".")
+
+    return os.path.join(base_path, relative_path)
+sound1 = pygame.mixer.Sound(resource_path('zvuk-udara-po-myachiku.ogg'))
+pygame.mixer.music.load(resource_path('60655cdca47ed56e7802f58.mp3'))
 pygame.mixer.music.set_volume(0.3)
 pygame.mixer.music.play()
 class GameSprite(pygame.sprite.Sprite):
     def __init__(self, img, x, y, speed, width, height):
         super().__init__()
-        self.image = pygame.transform.scale(pygame.image.load(img), (width, height))
+        self.image = pygame.transform.scale(pygame.image.load(resource_path(img)), (width, height))
         self.speed = speed
         self.rect = self.image.get_rect()
         self.rect.x = x
@@ -39,7 +46,7 @@ class Player(GameSprite):
 class Ball(pygame.sprite.Sprite):
     def __init__(self, img, x, y, speed_x, speed_y, width, height):
         super().__init__()
-        self.image = pygame.transform.scale(pygame.image.load(img), (width, height))
+        self.image = pygame.transform.scale(pygame.image.load(resource_path(img)), (width, height))
         self.speed_x = speed_x
         self.speed_y = speed_y
         self.rect = self.image.get_rect()
@@ -84,16 +91,16 @@ while True:
         pygame.draw.line(window, (255, 255, 255), [350, 0], [350, 500], 5)
         clock.tick(60)
         pygame.display.update()
+        end = time.time()
     else:
-        #end = time.time()
         if ball.is_lose() == 'left':
             f1 = pygame.font.Font(None, 60)
             text1 = f1.render('Правый выйграл!', True, (225, 225, 225))
         if ball.is_lose() == 'right':
             f1 = pygame.font.Font(None, 60)
             text1 = f1.render('Левый выйграл!', True, (225, 225, 225))
-            #text2 = f1.render(str(int(end-start)), True, (225, 225, 225))
+            text2 = f1.render(str(int(end-start)), True, (225, 225, 225))
         window.blit(text1, (210, 200))
-        #window.blit(text2, (350, 250))
+        window.blit(text2, (350, 250))
         pygame.display.update()
 pygame.display.update() 
