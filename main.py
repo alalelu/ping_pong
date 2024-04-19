@@ -71,16 +71,39 @@ class Ball(pygame.sprite.Sprite):
             return 'left'
         else:
             return 'not'
+    def go_home(self, x, y):
+        self.rect.x = x
+        self.rect.y = y
 
+class Button_restart():
+    def __init__(self, x, y, img, width, height):
+        self.image = pygame.transform.scale(pygame.image.load(img),(width, height))
+        self.rect = self.image.get_rect()
+        self.rect.x = 0
+        self.rect.y = 0
+    def update(self, x, y):
+        self.rect.x = x
+        self.rect.y = y
+        window.blit(self.image, self.rect)
+    def is_clicked(self, x, y):
+        return self.rect.collidepoint(x, y)
+    def stranno(self):
+        self.rect.x = -100
+        self.rect.y = -100
 platform_left = Player('pngegg.png', 0, 100, 4, 30, 150)
 platform_right = Player('pngegg.png', 670, 100, 4, 30, 150)
 ball = Ball('pngegg (1).png', 330, 250, 4, 4, 50, 50)
-
+restart = Button_restart(330, 310, 'pngegg (2).png', 50, 50)
 start = time.time()
 while True:
     for e in pygame.event.get():
         if e.type == pygame.QUIT:
             exit()
+        if e.type == pygame.MOUSEBUTTONDOWN and e.button == 1:
+            x, y = e.pos
+            if restart.is_clicked(x, y):
+                ball.go_home(330, 250)
+                start = time.time()
     if ball.is_lose() == 'not':
         window.fill((128,128,128))
         platform_left.reset()
@@ -88,7 +111,7 @@ while True:
         platform_right.reset()
         platform_right.update_right()
         ball.update_ball(platform_left.rect, platform_right.rect)
-        pygame.draw.line(window, (255, 255, 255), [350, 0], [350, 500], 5)
+        restart.stranno()
         clock.tick(60)
         pygame.display.update()
         end = time.time()
@@ -96,11 +119,13 @@ while True:
         if ball.is_lose() == 'left':
             f1 = pygame.font.Font(None, 60)
             text1 = f1.render('Правый выйграл!', True, (225, 225, 225))
+            text2 = f1.render('Счёт: '+str(int(end-start)), True, (225, 225, 225))
         if ball.is_lose() == 'right':
             f1 = pygame.font.Font(None, 60)
             text1 = f1.render('Левый выйграл!', True, (225, 225, 225))
-            text2 = f1.render(str(int(end-start)), True, (225, 225, 225))
-        window.blit(text1, (210, 200))
-        window.blit(text2, (350, 250))
+            text2 = f1.render('Счёт: '+str(int(end-start)), True, (225, 225, 225))
+        window.blit(text1, (190, 150))
+        window.blit(text2, (280, 230))
+        restart.update(330, 310)
         pygame.display.update()
 pygame.display.update() 
